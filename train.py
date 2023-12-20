@@ -9,7 +9,7 @@ def str2bool(v):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train')
-    parser.add_argument('--data-dir', default='/home/hdd/dataset_xzw/ShanghaiTech/part_A_final', help='data path')
+    parser.add_argument('--data-dir', default='D:\\Github\\ShanghaiTech\\part_A_final', help='data path')
     parser.add_argument('--dataset', default='sha', help='dataset name: qnrf, nwpu, sha, shb, custom')
     parser.add_argument('--lr', type=float, default=1e-5,
                         help='the initial learning rate')
