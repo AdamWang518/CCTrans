@@ -28,9 +28,9 @@ parser.add_argument('--batch-size', type=int, default=8,
                         help='train batch size')
 parser.add_argument('--crop-size', type=int, default=256,
                     help='the crop size of the train image')
-parser.add_argument('--model-path', type=str, required=True,
+parser.add_argument('--model-path', type=str, default='D:\\Github\\CCTrans\\best_model_mae-54.31_epoch-652.pth',
                     help='saved model path')
-parser.add_argument('--data-path', type=str,
+parser.add_argument('--data-path', type=str, default='D:\\Github\\ShanghaiTech\\part_B_final',
                     help='dataset path')
 parser.add_argument('--dataset', type=str, default='sha',
                     help='dataset name: qnrf, nwpu, sha, shb, custom')

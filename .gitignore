@@ -118,3 +118,5 @@ wandb/
 
 #other project file
 *_test.txt
+*.pth
+*.tar
