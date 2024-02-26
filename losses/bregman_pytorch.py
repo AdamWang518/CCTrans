@@ -166,6 +166,7 @@ def sinkhorn_knopp(a, b, C, reg=1e-1, maxIter=1000, stopThr=1e-9,
 
     # allocate memory beforehand
     KTu = torch.empty(v.shape, dtype=v.dtype).to(device)
+    
     Kv = torch.empty(u.shape, dtype=u.dtype).to(device)
 
     while (err > stopThr and it <= maxIter):

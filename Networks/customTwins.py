@@ -86,18 +86,18 @@ class CustomTwinsSVTLarge(nn.Module):
 
         for i, (embed, drop, blocks, pos_blk) in enumerate(
                 zip(self.twins.patch_embeds, self.twins.pos_drops, self.twins.blocks, self.twins.pos_block)):
-            x, size = embed(x)
+            x, size = embed(x)  # 假设size是一个包含(H, W)的元组
             x = drop(x)
             for j, blk in enumerate(blocks):
                 x = blk(x, size)
                 if j == 0:
                     x = pos_blk(x, size)
-            if i < len(self.twins.depths) - 1:
-                x = x.reshape(x.shape[0], *size, -1).permute(0, 3, 1, 2).contiguous()
-            else:
-                # 假设最后一个阶段的空间尺寸为 HxW
-                H, W = 7, 7  # 这里的 7x7 是一个示例，您需要根据模型实际情况进行调整
-                x = x.reshape(x.shape[0], x.shape[2], H, W)  # 调整形状为 [B, C, H, W]
+            
+            # 动态调整形状，适应当前阶段的特征图大小
+            B, _, C = x.shape  # 获取当前批次大小和通道数
+            H, W = size  # 从embed返回的size中获取特征图的高度和宽度
+            x = x.permute(0, 2, 1).reshape(B, C, H, W)  # 调整形状为[B, C, H, W]
+            
             stage_outputs.append(x)
 
         # 应用 Regression 到最后三个阶段的输出
