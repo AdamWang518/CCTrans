@@ -171,7 +171,9 @@ def sinkhorn_knopp(a, b, C, reg=1e-1, maxIter=1000, stopThr=1e-9,
 
     while (err > stopThr and it <= maxIter):
         upre, vpre = u, v
-        torch.matmul(u, K, out=KTu)
+        KTu = torch.matmul(u, K)
+        # 修正
+        # torch.matmul(u, K, out=KTu)
         v = torch.div(b, KTu + M_EPS)
         torch.matmul(K, v, out=Kv)
         u = torch.div(a, Kv + M_EPS)
