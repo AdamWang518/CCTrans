@@ -119,7 +119,7 @@ class CustomTwinsSVTLarge(nn.Module):
         upsampled_efficientnet_output = self.dim_red4(upsampled_efficientnet_output)
         # 融合原图和上采样后的EfficientNet输出
         fused = torch.cat([x, upsampled_efficientnet_output], dim=1)
-        x_3_channels=self.dim_red4(fused)
+        x_3_channels=self.dim_mix(fused)
         # 使用卷积层将融合后的6通道图像转换为3通道
         
 
@@ -150,18 +150,3 @@ class CustomTwinsSVTLarge(nn.Module):
         mu_normed = mu / (mu_sum + 1e-6)
 
         return mu, mu_normed
-# 假設 CustomTwinsSVTLarge 已經定義並且初始化
-model = CustomTwinsSVTLarge(pretrained=False)  # 使用預訓練權重或者不使用取決於你的需求
-
-# 生成一個224x224x3的隨機圖像
-random_image = torch.rand((3, 224, 224))
-
-# 轉換圖像為模型接受的批次格式 (假設模型接受批次大小為1)
-input_image = random_image.unsqueeze(0)  # 增加一個批次維度
-
-# 確保模型處於評估模式
-model.eval()
-
-# 通過模型進行前向傳播
-with torch.no_grad():
-    output = model(input_image)
