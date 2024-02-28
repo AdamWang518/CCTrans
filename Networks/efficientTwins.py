@@ -113,12 +113,14 @@ class CustomTwinsSVTLarge(nn.Module):
         # 上采样
         upsampled_efficientnet_output = F.interpolate(efficientnet_output, scale_factor=scale_factor, mode='bilinear', align_corners=False)
         #逐步降維
-        upsampled_efficientnet_output = self.dim_red1(upsampled_efficientnet_output)
         upsampled_efficientnet_output = self.dim_red2(upsampled_efficientnet_output)
         upsampled_efficientnet_output = self.dim_red3(upsampled_efficientnet_output)
         upsampled_efficientnet_output = self.dim_red4(upsampled_efficientnet_output)
+        
         # 融合原图和上采样后的EfficientNet输出
         fused = torch.cat([x, upsampled_efficientnet_output], dim=1)
+        
+
         x_3_channels=self.dim_mix(fused)
         # 使用卷积层将融合后的6通道图像转换为3通道
         

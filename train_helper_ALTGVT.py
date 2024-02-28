@@ -123,8 +123,8 @@ class Trainer(object):
             for x in ["train", "val"]
         }
         # self.model = ALTGVT.alt_gvt_large(pretrained=True)
-        self.model = customTwins.CustomTwinsSVTLarge(pretrained=True)
-        # self.model = efficientTwins.CustomTwinsSVTLarge(pretrained=True)
+        # self.model = customTwins.CustomTwinsSVTLarge(pretrained=True)
+        self.model = efficientTwins.CustomTwinsSVTLarge(pretrained=True)
         self.model.to(self.device)
         self.optimizer = optim.AdamW(
             self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay

@@ -4,6 +4,7 @@ import os
 import numpy as np
 import datasets.crowd as crowd
 from Networks import ALTGVT
+from Networks import customTwins
 import torch.nn.functional as F
 
 def tensor_divideByfactor(img_tensor, factor=32):
@@ -58,6 +59,7 @@ def test(args, isSave = True):
                                              num_workers=1, pin_memory=True)
 
     model = ALTGVT.alt_gvt_large(pretrained=True)
+    model =customTwins.CustomTwinsSVTLarge(pretrained=True)
     model.to(device)
     model.load_state_dict(torch.load(model_path, device))
     model.eval()
