@@ -13,6 +13,7 @@ from datasets.crowd import Crowd_qnrf, Crowd_nwpu, Crowd_sh, CustomDataset
 # from models import vgg19
 from Networks import ALTGVT
 from Networks import customTwins
+from Networks import efficientTwins
 from losses.ot_loss import OT_Loss
 from utils.pytorch_utils import Save_Handle, AverageMeter
 import utils.log_utils as log_utils
@@ -123,6 +124,7 @@ class Trainer(object):
         }
         # self.model = ALTGVT.alt_gvt_large(pretrained=True)
         self.model = customTwins.CustomTwinsSVTLarge(pretrained=True)
+        # self.model = efficientTwins.CustomTwinsSVTLarge(pretrained=True)
         self.model.to(self.device)
         self.optimizer = optim.AdamW(
             self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay
