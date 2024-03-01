@@ -5,6 +5,7 @@ import numpy as np
 import datasets.crowd as crowd
 from Networks import ALTGVT
 from Networks import customTwins
+from Networks import efficientTwins
 import torch.nn.functional as F
 
 def tensor_divideByfactor(img_tensor, factor=32):
@@ -29,9 +30,9 @@ parser.add_argument('--batch-size', type=int, default=8,
                         help='train batch size')
 parser.add_argument('--crop-size', type=int, default=256,
                     help='the crop size of the train image')
-parser.add_argument('--model-path', type=str, default='D:\\Github\\CCTrans\\best_model_mae-54.31_epoch-652.pth',
+parser.add_argument('--model-path', type=str, default='D:\\Github\\CCTrans\\best_model_mae-54.91_epoch-859_newModel.pth',
                     help='saved model path')
-parser.add_argument('--data-path', type=str, default='D:\\Github\\ShanghaiTech\\part_B_final',
+parser.add_argument('--data-path', type=str, default='D:\\Github\\ShanghaiTech\\part_A_final',
                     help='dataset path')
 parser.add_argument('--dataset', type=str, default='sha',
                     help='dataset name: qnrf, nwpu, sha, shb, custom')
@@ -58,8 +59,9 @@ def test(args, isSave = True):
     dataloader = torch.utils.data.DataLoader(dataset, 1, shuffle=False,
                                              num_workers=1, pin_memory=True)
 
-    model = ALTGVT.alt_gvt_large(pretrained=True)
+    # model = ALTGVT.alt_gvt_large(pretrained=True)
     model =customTwins.CustomTwinsSVTLarge(pretrained=True)
+    # model =efficientTwins.CustomTwinsSVTLarge(pretrained=True)
     model.to(device)
     model.load_state_dict(torch.load(model_path, device))
     model.eval()
