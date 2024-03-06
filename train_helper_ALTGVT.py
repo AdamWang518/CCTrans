@@ -15,6 +15,7 @@ from Networks import ALTGVT
 from Networks import customTwins
 from Networks import efficientTwins
 from Networks import ETTrans
+from Networks import EStageTrans
 from losses.ot_loss import OT_Loss
 from utils.pytorch_utils import Save_Handle, AverageMeter
 import utils.log_utils as log_utils
@@ -126,7 +127,8 @@ class Trainer(object):
         # self.model = ALTGVT.alt_gvt_large(pretrained=True)
         # self.model = customTwins.CustomTwinsSVTLarge(pretrained=True)
         # self.model = efficientTwins.CustomTwinsSVTLarge(pretrained=True)
-        self.model = ETTrans.CustomTwinsSVTLarge(pretrained=True)
+        # self.model = ETTrans.CustomTwinsSVTLarge(pretrained=True)
+        self.model = EStageTrans.CustomTwinsSVTLarge(pretrained=True)
         self.model.to(self.device)
         self.optimizer = optim.AdamW(
             self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay

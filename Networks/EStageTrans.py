@@ -93,35 +93,46 @@ class Regression(nn.Module):
 class CustomEfficientNet(nn.Module):
     def __init__(self, pretrained=True):
         super(CustomEfficientNet, self).__init__()
-        # 加載 EfficientNet 模型
+        # Load EfficientNet model as a feature extractor
         self.base_model = timm.create_model('efficientnet_b0', pretrained=pretrained, features_only=True)
-        # 記錄每個階段的輸出通道數
-        self.stage_channels = [self.base_model.feature_info.channels()[i] for i in range(len(self.base_model.stages) - 3, len(self.base_model.stages))]
-        # 降低每個階段輸出的維度
-        self.dim_reduction_layers = nn.ModuleList([
-            DimReduction(in_channels, 3) for in_channels in self.stage_channels
+        
+        # Assuming you want to use the last three stages
+        num_stages = len(self.base_model._stage_out_idx)  # Get total number of stages
+        last_stages_indices = sorted(list(self.base_model._stage_out_idx.values()))[-3:]  # Get indices of the last 3 stages
+        
+        # Dimension reduction for the outputs of the last three stages
+        self.dim_reductions = nn.ModuleList([
+            DimReduction(self.base_model.feature_info.channels()[idx], 3) for idx in last_stages_indices
         ])
-        # 用於融合輸出和原始圖像的卷積層
-        self.merge_conv = nn.Conv2d(sum(self.stage_channels) + 3, 3, kernel_size=1, stride=1, padding=0)
+        
+        # Convolutional layer to merge outputs and original image
+        self.merge_conv = nn.Conv2d(len(last_stages_indices) * 3 + 3, 3, kernel_size=1, stride=1, padding=0)
+
     def forward(self, x):
-    # 原始圖像大小
+        # Original image size
         origin = x
         orig_size = x.size()[2:]
-        # 從最後幾個階段獲取特徵
-        all_features = self.base_model(x)
-        # 根據 stage_channels 選擇最後幾個階段的特徵
-        stage_features = all_features[-(len(self.stage_channels)):]
-        # 上採樣並降低每個階段輸出的維度
+        # Get features from the specified stages
+        features = self.base_model(x)
+        
+        # Select the outputs of the last three stages
+        selected_features = [features[idx] for idx in last_stages_indices]
+        
+        # Upsample and reduce dimension
         upsampled_features = []
-        for feature, dim_reduce in zip(stage_features, self.dim_reduction_layers):
+        for feature, dim_reduce in zip(selected_features, self.dim_reductions):
             upsampled_feature = F.interpolate(feature, size=orig_size, mode='bilinear', align_corners=False)
             reduced_feature = dim_reduce(upsampled_feature)
             upsampled_features.append(reduced_feature)
-        # 將上採樣的特徵與原始圖像連接起來
-        merged_features = torch.cat([origin] + upsampled_features, dim=1)
-        # 使用卷積層進行融合
+        upsampled_features.append(origin)
+        
+        # Concatenate upsampled features with the original image along the channel dimension
+        merged_features = torch.cat(upsampled_features, dim=1)
+        
+        # Merge using a convolutional layer
         merged_output = self.merge_conv(merged_features)
         return merged_output
+
 
 
 class CustomTwinsSVTLarge(nn.Module):
