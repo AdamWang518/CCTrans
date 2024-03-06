@@ -98,15 +98,15 @@ class CustomEfficientNet(nn.Module):
         
         # Assuming you want to use the last three stages
         num_stages = len(self.base_model._stage_out_idx)  # Get total number of stages
-        last_stages_indices = sorted(list(self.base_model._stage_out_idx.values()))[-3:]  # Get indices of the last 3 stages
+        self.last_stages_indices = sorted(list(self.base_model._stage_out_idx.values()))[-3:]  # Get indices of the last 3 stages
         
         # Dimension reduction for the outputs of the last three stages
         self.dim_reductions = nn.ModuleList([
-            DimReduction(self.base_model.feature_info.channels()[idx], 3) for idx in last_stages_indices
+            DimReduction(self.base_model.feature_info.channels()[idx], 3) for idx in self.last_stages_indices
         ])
         
         # Convolutional layer to merge outputs and original image
-        self.merge_conv = nn.Conv2d(len(last_stages_indices) * 3 + 3, 3, kernel_size=1, stride=1, padding=0)
+        self.merge_conv = nn.Conv2d(len(self.last_stages_indices) * 3 + 3, 3, kernel_size=1, stride=1, padding=0)
 
     def forward(self, x):
         # Original image size
@@ -116,7 +116,7 @@ class CustomEfficientNet(nn.Module):
         features = self.base_model(x)
         
         # Select the outputs of the last three stages
-        selected_features = [features[idx] for idx in last_stages_indices]
+        selected_features = [features[idx] for idx in self.last_stages_indices]
         
         # Upsample and reduce dimension
         upsampled_features = []
